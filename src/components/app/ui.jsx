@@ -31,7 +31,7 @@ import { BottomNav } from "./BottomNav";
 
 const searchableViews = ["Transactions", "Borrowers", "Equipment", "Returns", "Users"];
 const searchPlaceholders = {
-  Transactions: "Find borrower, equipment, code, status, or transaction ID",
+  Transactions: "Find transaction",
   Borrowers: "Find borrower by name, phone, address, or ID",
   Equipment: "Find equipment by name, code, category, or condition",
   Returns: "Find returned equipment, borrower, code, or receiver",
@@ -262,21 +262,23 @@ export function TextArea({ label, value, onChange }) {
   );
 }
 
-export function UploadField({ label, value, onChange, onUpload, uploading }) {
+export function UploadField({ label, value, onChange, onUpload, uploading, showPreview = true }) {
   return (
     <label className="field span2">
       <span>{label}</span>
       <div className="uploadRow">
-        <div className="uploadPreviewShell">
-          {value ? (
-            <img src={value} alt="" />
-          ) : (
-            <div className="uploadPreview">
-              <FaImage />
-              <span>No photo</span>
-            </div>
-          )}
-        </div>
+        {showPreview && (
+          <div className="uploadPreviewShell">
+            {value ? (
+              <img src={value} alt="" />
+            ) : (
+              <div className="uploadPreview">
+                <FaImage />
+                <span>No photo</span>
+              </div>
+            )}
+          </div>
+        )}
         <div className="uploadDrop">
           <strong>{uploading ? "Uploading..." : "Choose image"}</strong>
           <p>Upload a clear photo or paste an image URL below.</p>

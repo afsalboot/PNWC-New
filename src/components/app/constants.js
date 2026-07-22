@@ -55,6 +55,13 @@ export const emptyTransaction = {
   notes: "",
 };
 
+export function formatRole(role) {
+  return String(role || "volunteer")
+    .trim()
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 export async function api(path, options) {
   const response = await fetch(path, {
     headers: { "Content-Type": "application/json" },

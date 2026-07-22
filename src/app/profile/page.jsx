@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { FaArrowRightFromBracket, FaFloppyDisk, FaUser } from "react-icons/fa6";
+import { FaArrowRightFromBracket, FaCamera, FaFloppyDisk, FaUser } from "react-icons/fa6";
 import { useAuth } from "@/context/AuthContext";
-import { api, uploadImage } from "@/components/app/constants";
-import { AppLayout, Field, Title, UploadField } from "@/components/app/ui";
+import { api, formatRole, uploadImage } from "@/components/app/constants";
+import { AppLayout, Field, Title } from "@/components/app/ui";
 
 export default function ProfilePage() {
   const { user, loading: authLoading, logout, refreshUser } = useAuth();
@@ -57,10 +57,14 @@ function ProfileForm({ user, logout, refreshUser, setMessage }) {
     <section className="glass panel profilePanel">
       <Title eyebrow="Profile" title="My Account" />
       <div className="profileSummary">
-        {form.profileImage ? <img src={form.profileImage} alt="" /> : <span className="photoPlaceholder profilePhotoPlaceholder"><FaUser /></span>}
+        <label className="group relative grid h-[82px] w-[82px] shrink-0 cursor-pointer place-items-center overflow-hidden rounded-[24px]" title="Change profile photo">
+          {form.profileImage ? <img src={form.profileImage} alt="" className="h-full w-full object-cover" /> : <span className="grid h-full w-full place-items-center bg-[#087f78] text-2xl text-white"><FaUser /></span>}
+          <span className="absolute inset-0 grid place-items-center bg-black/45 text-lg text-white opacity-0 transition-opacity group-hover:opacity-100"><FaCamera /></span>
+          <input className="sr-only" type="file" accept="image/*" onChange={(event) => uploadProfileImage(event.target.files?.[0])} disabled={uploading} />
+        </label>
         <div>
           <strong>{user?.name || "PNWC User"}</strong>
-          <p>{user?.role || "volunteer"} - {user?.username}</p>
+          <p>{formatRole(user?.role)} - {user?.username}</p>
         </div>
       </div>
       <form className="formGrid" onSubmit={saveProfile}>
@@ -69,9 +73,8 @@ function ProfileForm({ user, logout, refreshUser, setMessage }) {
         <Field label="Phone" value={form.phone} onChange={(value) => updateProfile("phone", value)} />
         <div className="field">
           <span>Role</span>
-          <div className="readonlyField">{user?.role || "volunteer"}</div>
+          <div className="readonlyField">{formatRole(user?.role)}</div>
         </div>
-        <UploadField label="Profile Photo" value={form.profileImage} onChange={(value) => updateProfile("profileImage", value)} onUpload={uploadProfileImage} uploading={uploading} />
         <button className="primaryButton iconTextButton" disabled={uploading}>
           <FaFloppyDisk />
           <span>{uploading ? "Uploading..." : "Save Profile"}</span>

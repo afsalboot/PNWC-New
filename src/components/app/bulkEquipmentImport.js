@@ -19,6 +19,19 @@ export const equipmentImportFields = [
   { key: "description", label: "Description" },
 ];
 
+// Keep the downloadable templates aligned with the Add Equipment modal. Image
+// is intentionally omitted because file/image uploads are not spreadsheet data.
+export const equipmentTemplateFields = [
+  "name",
+  "code",
+  "category",
+  "totalStock",
+  "availableStock",
+  "condition",
+  "status",
+  "description",
+];
+
 export const sampleRows = [
   {
     name: "Wheelchair Standard",
@@ -28,11 +41,6 @@ export const sampleRows = [
     availableStock: 5,
     condition: "Good",
     status: "Available",
-    model: "WC-STD",
-    serialNumber: "",
-    location: "Main store",
-    donorName: "Community donor",
-    donationDate: "2026-07-19",
     description: "Foldable wheelchair",
   },
   {
@@ -43,11 +51,6 @@ export const sampleRows = [
     availableStock: 1,
     condition: "Excellent",
     status: "Available",
-    model: "HB-01",
-    serialNumber: "HB001",
-    location: "Storage room",
-    donorName: "",
-    donationDate: "",
     description: "Manual adjustable bed",
   },
 ];
@@ -92,11 +95,11 @@ export function mapRowToEquipment(row, mapping) {
 }
 
 export function createSampleCsv() {
-  return XLSX.utils.sheet_to_csv(XLSX.utils.json_to_sheet(sampleRows, { header: equipmentImportFields.map((field) => field.key) }));
+  return XLSX.utils.sheet_to_csv(XLSX.utils.json_to_sheet(sampleRows, { header: equipmentTemplateFields }));
 }
 
 export function createSampleExcelBlob() {
-  const worksheet = XLSX.utils.json_to_sheet(sampleRows, { header: equipmentImportFields.map((field) => field.key) });
+  const worksheet = XLSX.utils.json_to_sheet(sampleRows, { header: equipmentTemplateFields });
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Equipment");
   const data = XLSX.write(workbook, { bookType: "xlsx", type: "array" });

@@ -579,7 +579,8 @@ textarea:focus {
 
 .borrowerMatch,
 .returnSummary,
-.formError {
+.formError,
+.formSuccess {
   display: grid;
   gap: 6px;
   border-radius: 18px;
@@ -610,6 +611,14 @@ textarea:focus {
   border: 1px solid rgba(190, 65, 65, 0.24);
   background: rgba(190, 65, 65, 0.1);
   color: var(--danger);
+  font-weight: 900;
+}
+
+.formSuccess {
+  margin: 0;
+  border: 1px solid rgba(15, 143, 132, 0.24);
+  background: rgba(15, 143, 132, 0.1);
+  color: var(--teal);
   font-weight: 900;
 }
 

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaArrowRight, FaDownload, FaFileArrowUp, FaTriangleExclamation } from "react-icons/fa6";
+import { Capacitor } from "@capacitor/core";
+import { Directory, Filesystem } from "@capacitor/filesystem";
 import * as XLSX from "xlsx";
 import {
   autoMapHeaders,
@@ -19,6 +21,7 @@ export function BulkEquipmentModal({ onClose }) {
   const [rowCount, setRowCount] = useState(0);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
+  const [downloadMessage, setDownloadMessage] = useState("");
 
   async function parseFile(file) {
     if (!file) return;
@@ -53,12 +56,12 @@ export function BulkEquipmentModal({ onClose }) {
     router.push("/equipment/import");
   }
 
-  function downloadSampleCsv() {
-    downloadFile(new Blob([createSampleCsv()], { type: "text/csv;charset=utf-8" }), "pnwc-equipment-sample.csv");
+  async function downloadSampleCsv() {
+    await downloadFile(new Blob([createSampleCsv()], { type: "text/csv;charset=utf-8" }), "pnwc-equipment-sample.csv", setDownloadMessage);
   }
 
-  function downloadSampleExcel() {
-    downloadFile(createSampleExcelBlob(), "pnwc-equipment-sample.xlsx");
+  async function downloadSampleExcel() {
+    await downloadFile(createSampleExcelBlob(), "pnwc-equipment-sample.xlsx", setDownloadMessage);
   }
 
   return (
@@ -89,6 +92,8 @@ export function BulkEquipmentModal({ onClose }) {
           {status === "failed" && <><FaTriangleExclamation /><span>File upload failed.</span></>}
         </div>
 
+        {downloadMessage && <p className="formSuccess" role="status">{downloadMessage}</p>}
+
         {error && <p className="formError">{error}</p>}
 
         <button type="button" className="primaryButton" disabled={status !== "ready"} onClick={goToMapping}>
@@ -100,7 +105,24 @@ export function BulkEquipmentModal({ onClose }) {
   );
 }
 
-function downloadFile(blob, fileName) {
+async function downloadFile(blob, fileName, setMessage) {
+  setMessage("");
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      await Filesystem.writeFile({
+        path: `PNWC/${fileName}`,
+        data: await blobToBase64(blob),
+        directory: Directory.Documents,
+        recursive: true,
+      });
+      setMessage(`Saved ${fileName} in Documents/PNWC.`);
+    } catch (error) {
+      setMessage(`Could not save ${fileName}. Please try again.`);
+    }
+    return;
+  }
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -109,4 +131,17 @@ function downloadFile(blob, fileName) {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+  setMessage(`${fileName} downloaded.`);
+}
+
+async function blobToBase64(blob) {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  const chunkSize = 0x8000;
+  let binary = "";
+
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+  }
+
+  return btoa(binary);
 }

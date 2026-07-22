@@ -49,6 +49,48 @@ function New-LauncherIcon {
     }
 }
 
+function New-SplashScreen {
+    param(
+        [string]$OutputPath,
+        [int]$Width,
+        [int]$Height
+    )
+
+    $sourceImage = [System.Drawing.Image]::FromFile($sourcePath)
+    try {
+        $bitmap = New-Object System.Drawing.Bitmap $Width, $Height
+        try {
+            $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+            try {
+                $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+                $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+                $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+                $graphics.Clear([System.Drawing.Color]::White)
+
+                $maxWidth = [int]($Width * 0.62)
+                $maxHeight = [int]($Height * 0.34)
+                $scale = [Math]::Min($maxWidth / $sourceImage.Width, $maxHeight / $sourceImage.Height)
+                $drawWidth = [int]($sourceImage.Width * $scale)
+                $drawHeight = [int]($sourceImage.Height * $scale)
+                $left = [int](($Width - $drawWidth) / 2)
+                $top = [int](($Height - $drawHeight) / 2)
+                $graphics.DrawImage($sourceImage, $left, $top, $drawWidth, $drawHeight)
+            } finally {
+                $graphics.Dispose()
+            }
+
+            if (Test-Path -LiteralPath $OutputPath) {
+                Remove-Item -LiteralPath $OutputPath -Force
+            }
+            $bitmap.Save($OutputPath, [System.Drawing.Imaging.ImageFormat]::Png)
+        } finally {
+            $bitmap.Dispose()
+        }
+    } finally {
+        $sourceImage.Dispose()
+    }
+}
+
 $densitySizes = @{
     "mipmap-mdpi" = 48
     "mipmap-hdpi" = 72
@@ -65,4 +107,19 @@ foreach ($density in $densitySizes.Keys) {
     New-LauncherIcon -OutputPath (Join-Path $directory "ic_launcher_foreground.png") -Size ([int]($size * 2.25)) -PaddingPercent 18
 }
 
-Write-Host "Generated Android launcher icons from $($sourcePath.Path)"
+$splashTargets = Get-ChildItem -LiteralPath $resPath -Directory |
+    Where-Object { $_.Name -like "drawable*" } |
+    ForEach-Object { Get-Item -LiteralPath (Join-Path $_.FullName "splash.png") -ErrorAction SilentlyContinue }
+
+foreach ($splashTarget in $splashTargets) {
+    $existingSplash = [System.Drawing.Image]::FromFile($splashTarget.FullName)
+    try {
+        $splashWidth = $existingSplash.Width
+        $splashHeight = $existingSplash.Height
+    } finally {
+        $existingSplash.Dispose()
+    }
+    New-SplashScreen -OutputPath $splashTarget.FullName -Width $splashWidth -Height $splashHeight
+}
+
+Write-Host "Generated Android launcher icons and PNWC splash screens from $($sourcePath.Path)"

@@ -44,7 +44,7 @@ export default function LoginPage() {
         <form className="authForm loginForm" onSubmit={submitLogin}>
           <label className="field">
             <span>Username</span>
-            <input value={form.username} onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))} placeholder="Iqbal" required />
+            <input value={form.username} onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))} placeholder="Username" required />
           </label>
           <label className="field">
             <span>Password</span>

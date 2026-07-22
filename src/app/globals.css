@@ -134,17 +134,17 @@ textarea,
   margin: 0 auto;
   padding: 8px 10px;
   border-radius: 999px;
-  transform: translateY(0);
+  /* transform: translateY(0);
   transition:
     transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 220ms ease,
-    box-shadow 180ms ease;
+    box-shadow 180ms ease; */
 }
 
 .topNav.navHidden {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-92px);
+  /* transform: translateY(-92px); */
 }
 
 .brandMark {
@@ -1113,9 +1113,9 @@ td span {
 
 .bottomBar {
   position: fixed;
-  right: 18px;
+  right: auto;
   bottom: 18px;
-  left: 18px;
+  left: 50%;
   z-index: 30;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 82px minmax(0, 1fr);
@@ -1123,13 +1123,14 @@ td span {
   gap: 0;
   width: min(calc(100% - 36px), 760px);
   max-width: 760px;
-  margin: 0 auto;
+  margin: 0;
   border-radius: 999px;
   padding: 9px;
   overflow: visible;
   box-shadow:
     0 24px 80px rgba(17, 24, 24, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  transform: translateX(-50%);
 }
 
 .dockGroup {
@@ -1167,11 +1168,7 @@ td span {
   font-size: 0.78rem;
   font-weight: 900;
   text-decoration: none;
-  transition:
-    grid-template-columns 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    min-width 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    color 180ms ease,
-    transform 180ms ease;
+  transition: none;
 }
 
 .bottomBar a:not(.issueDockButton) {
@@ -1187,9 +1184,7 @@ td span {
   content: "";
   opacity: 0;
   transform: scale(0.82);
-  transition:
-    transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    opacity 220ms ease;
+  transition: none;
 }
 
 .bottomBar a span {
@@ -1201,16 +1196,20 @@ td span {
 .bottomBar a svg {
   width: 16px;
   height: 16px;
-  transition: transform 220ms ease;
+  transition: none;
 }
 
-.bottomBar a:hover {
-  color: var(--ink);
-  transform: translateY(-2px);
+.bottomBar a:not(.issueDockButton):hover {
+  color: var(--muted);
+  transform: none;
+}
+
+.bottomBar a.active:hover {
+  color: #fff;
 }
 
 .bottomBar a:hover svg {
-  transform: translateY(-1px) scale(1.08);
+  transform: none;
 }
 
 .bottomBar a.active {
@@ -1226,9 +1225,15 @@ td span {
   transform: scale(1);
 }
 
+.bottomBar a.active > svg,
+.bottomBar a.active > span {
+  animation: dockModuleActive 320ms cubic-bezier(0.22, 0.8, 0.28, 1) both;
+}
+
 .bottomBar .issueDockButton {
   position: absolute;
   left: 50%;
+  top: 50%;
   z-index: 3;
   display: grid;
   grid-template-columns: 1fr;
@@ -1244,7 +1249,7 @@ td span {
   box-shadow:
     0 18px 42px rgba(15, 143, 132, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.44);
-  transform: translate(-50%, -22px);
+  transform: translate(-50%, -50%);
 }
 
 .bottomBar .issueDockButton::before {
@@ -1263,16 +1268,37 @@ td span {
 .bottomBar .issueDockButton svg {
   width: 20px;
   height: 20px;
-  transform: rotate(0deg);
+  transform: none;
 }
 
 .bottomBar .issueDockButton:hover {
   color: #fff;
-  transform: translate(-50%, -24px) scale(1.04);
+  transform: translate(-50%, -50%);
 }
 
 .bottomBar .issueDockButton:hover svg {
-  transform: rotate(90deg) scale(1.08);
+  transform: none;
+}
+
+.bottomBar .issueDockButton,
+.bottomBar .issueDockButton:hover,
+.bottomBar .issueDockButton.activeIssue,
+.bottomBar .issueDockButton.activeIssue:hover {
+  animation: none !important;
+  background: var(--teal) !important;
+  box-shadow: 0 12px 26px rgba(8, 127, 120, 0.24) !important;
+  color: #fff !important;
+  top: 50% !important;
+  left: 50% !important;
+  transition: none !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.bottomBar .issueDockButton svg,
+.bottomBar .issueDockButton:hover svg {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
 }
 
 .authPage {
@@ -1660,6 +1686,16 @@ td span {
   }
 }
 
+@keyframes dockModuleActive {
+  from {
+    transform: translateX(-7px);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1988,14 +2024,15 @@ td span {
   }
 
   .bottomBar {
-    right: 10px;
+    right: auto;
     bottom: 10px;
-    left: 10px;
+    left: 50%;
     grid-template-columns: minmax(0, 1fr) 58px minmax(0, 1fr);
-    width: auto;
+    width: calc(100% - 20px);
     max-width: none;
     border-radius: 24px;
     padding: 8px;
+    transform: translateX(-50%);
   }
 
   .dockGroup {
@@ -2031,6 +2068,7 @@ td span {
   .bottomBar .issueDockButton.activeIssue {
     position: absolute;
     left: 50%;
+    top: 50%;
     grid-template-columns: 1fr;
     width: 48px;
     min-width: 48px;
@@ -2038,11 +2076,11 @@ td span {
     min-height: 48px;
     justify-self: center;
     padding: 0;
-    transform: translate(-50%, -16px);
+    transform: translate(-50%, -50%);
   }
 
   .bottomBar .issueDockButton:hover {
-    transform: translate(-50%, -18px) scale(1.04);
+    transform: translate(-50%, -50%);
   }
 
   .bottomBar a span {
@@ -2172,10 +2210,12 @@ td span {
   }
 
   .bottomBar {
-    right: 6px;
-    left: 6px;
+    right: auto;
+    left: 50%;
     grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr);
+    width: calc(100% - 12px);
     padding: 7px;
+    transform: translateX(-50%);
   }
 
   .dockGroup {
@@ -2198,6 +2238,7 @@ td span {
 
   .bottomBar .issueDockButton,
   .bottomBar .issueDockButton.activeIssue {
+    top: 50%;
     width: 46px;
     min-width: 46px;
     height: 46px;
@@ -3918,12 +3959,7 @@ tbody tr:hover {
   box-shadow: 0 12px 26px rgba(8, 127, 120, 0.24);
 }
 
-.bottomBar .issueDockButton:hover {
-  background: #066b65;
-}
-
-.bottomBar a:hover,
-.bottomBar .issueDockButton:hover,
+.bottomBar a:not(.issueDockButton):hover,
 .primaryButton:hover,
 .secondaryButton:hover,
 .tableActionButton:hover,
@@ -4367,11 +4403,13 @@ tbody tr:hover {
   }
 
   .bottomBar {
-    right: 10px;
+    right: auto;
     bottom: 10px;
-    left: 10px;
+    left: 50%;
+    width: calc(100% - 20px);
     border-radius: 14px;
     padding: 8px;
+    transform: translateX(-50%);
   }
 
   .bottomBar a,
@@ -4382,11 +4420,12 @@ tbody tr:hover {
   .bottomBar .issueDockButton,
   .bottomBar .issueDockButton.activeIssue {
     border-radius: 12px;
-    transform: translate(-50%, -14px);
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
   .bottomBar .issueDockButton:hover {
-    transform: translate(-50%, -14px);
+    transform: translate(-50%, -50%);
   }
 
   .actionHeaderActions {

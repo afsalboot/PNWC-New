@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   FaAddressCard,
@@ -27,16 +26,8 @@ import {
 } from "react-icons/fa6";
 import { useAuth } from "@/context/AuthContext";
 import { views, formatDate } from "./constants";
-
-const navIcons = {
-  dashboard: FaGaugeHigh,
-  borrowers: FaAddressCard,
-  equipment: FaBoxesStacked,
-  transactions: FaHandHoldingMedical,
-  returns: FaClipboardCheck,
-  profile: FaUser,
-  users: FaUsers,
-};
+import { Navbar } from "./Navbar";
+import { BottomNav } from "./BottomNav";
 
 const searchableViews = ["Transactions", "Borrowers", "Equipment", "Returns", "Users"];
 const searchPlaceholders = {
@@ -53,12 +44,7 @@ export function AppLayout({ activeView, search, onSearch, loading, message, chil
   const { user, logout } = useAuth();
   const [navHidden, setNavHidden] = useState(false);
   const visibleViews = views.filter((view) => !view.roles || view.roles.includes(user?.role));
-  const bottomViews = visibleViews.filter((view) => !["profile", "users", "returns"].includes(view.icon));
-  const bottomLeftViews = bottomViews.slice(0, Math.ceil(bottomViews.length / 2));
-  const bottomRightViews = bottomViews.slice(Math.ceil(bottomViews.length / 2));
   const canViewUsers = visibleViews.some((view) => view.icon === "users");
-  const showProfileLink = activeView !== "Profile";
-  const showLogout = activeView === "Profile";
   const showSearch = searchableViews.includes(activeView);
   const showStatus = loading || Boolean(message);
 
@@ -77,83 +63,25 @@ export function AppLayout({ activeView, search, onSearch, loading, message, chil
   }, []);
 
   return (
-    <main className="liquidApp">
-      <header className={`glass topNav ${navHidden ? "navHidden" : ""}`}>
-        <div className="brandMark">
-          <Image src="/Logo.jpeg" alt="PNWC logo" width={46} height={46} priority />
-          <div>
-            <strong>PNWC</strong>
-            <span>Hospital Equipment Lending</span>
-          </div>
-        </div>
-        <div className="topActions">
-          {canViewUsers && (
-            <Link className={`iconButton ${activeView === "Users" ? "activeTopAction" : ""}`} href="/users" aria-label="Users" title="Users">
-              <FaUsers />
-            </Link>
-          )}
-          {showProfileLink && (
-            <Link className="profileLink" href="/profile" aria-label="Profile" title={user ? `Profile ${user.name}` : "Profile"}>
-              {user?.profileImage ? <img src={user.profileImage} alt="" /> : <span><FaUser /></span>}
-            </Link>
-          )}
-          {showLogout && (
-            <button className="iconButton dangerButton" aria-label="Logout" title="Logout" onClick={logout}>
-              <FaPowerOff />
-            </button>
-          )}
-        </div>
-      </header>
+    <main className="min-h-screen px-3 pt-24 pb-28 sm:px-6">
+      <Navbar activeView={activeView} canViewUsers={canViewUsers} user={user} logout={logout} hidden={navHidden} />
 
-      <section className="heroBand">
+      <section className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1>{activeView}</h1>
+          <h1 className="m-0 text-4xl font-black tracking-normal text-[#17201f] sm:text-5xl">{activeView}</h1>
         </div>
         {showSearch && (
-          <label className="searchGlass">
-            <span>Search</span>
-            <input value={search} onChange={(event) => onSearch(event.target.value)} placeholder={searchPlaceholders[activeView] || `Search ${activeView.toLowerCase()}`} />
+          <label className="grid w-full max-w-md gap-1.5 rounded-xl border border-[#dce5e3] bg-white/90 px-3 py-2 shadow-sm sm:w-96">
+            <span className="text-xs font-black uppercase tracking-[0.08em] text-[#667572]">Search</span>
+            <input className="min-w-0 border-0 bg-transparent text-sm font-semibold text-[#17201f] outline-none placeholder:text-[#93a09d]" value={search} onChange={(event) => onSearch(event.target.value)} placeholder={searchPlaceholders[activeView] || `Search ${activeView.toLowerCase()}`} />
           </label>
         )}
       </section>
 
-      {showStatus && <div className="statusLine">{loading ? "Loading live data..." : message}</div>}
-      <section className="contentSpace">{children}</section>
+      {showStatus && <div className="mx-auto w-full max-w-6xl rounded-xl border border-[#bcded9] bg-[#effaf8] px-4 py-3 text-sm font-bold text-[#087f78]">{loading ? "Loading live data..." : message}</div>}
+      <section className="mx-auto w-full max-w-6xl">{children}</section>
 
-      <nav className="glass bottomBar">
-        <div className="dockGroup dockGroupLeft">
-          {bottomLeftViews.map((view) => {
-            const Icon = navIcons[view.icon] || FaChartLine;
-            return (
-              <Link key={view.label} className={activeView === view.label ? "active" : ""} href={view.href}>
-                <Icon />
-                <span>{view.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-        <Link
-          className="issueDockButton"
-          href="/transactions?issue=1"
-          aria-label="Lend equipment"
-          title="Lend equipment"
-          onClick={() => window.dispatchEvent(new Event("openIssueEquipment"))}
-        >
-          <FaPlus />
-          <span>Lend</span>
-        </Link>
-        <div className="dockGroup dockGroupRight">
-          {bottomRightViews.map((view) => {
-            const Icon = navIcons[view.icon] || FaChartLine;
-            return (
-              <Link key={view.label} className={activeView === view.label ? "active" : ""} href={view.href}>
-                <Icon />
-                <span>{view.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      <BottomNav activeView={activeView} user={user} />
     </main>
   );
 }

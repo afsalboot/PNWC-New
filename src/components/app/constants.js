@@ -1,5 +1,5 @@
 export const views = [
-  { label: "Dashboard", href: "/dashboard", icon: "dashboard" },
+  { label: "Home", href: "/dashboard", icon: "dashboard" },
   { label: "Transactions", href: "/transactions", icon: "transactions" },
   { label: "Borrowers", href: "/borrowers", icon: "borrowers" },
   { label: "Equipment", href: "/equipment", icon: "equipment" },

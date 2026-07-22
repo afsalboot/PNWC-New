@@ -29,7 +29,7 @@ export default function DashboardPage() {
   const returnCompletionChartData = buildReturnCompletionChartData(equipment, data.transactions);
 
   return (
-    <AppLayout activeView="Dashboard" search={search} onSearch={setSearch} loading={loading} message={message}>
+    <AppLayout activeView="Home" search={search} onSearch={setSearch} loading={loading} message={message}>
       <div className="statsGrid">
         <StatWithIcon label="Total Equipment" value={stats.totalEquipment || 0} icon={FaBoxesStacked} />
         <StatWithIcon label="Available Stock" value={stockAvailable || stats.availableEquipment || 0} icon={FaUserCheck} tone="blue" />

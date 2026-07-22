@@ -11,11 +11,6 @@ export const equipmentImportFields = [
   { key: "availableStock", label: "Available Stock" },
   { key: "condition", label: "Condition" },
   { key: "status", label: "Status" },
-  { key: "model", label: "Model" },
-  { key: "serialNumber", label: "Serial Number" },
-  { key: "location", label: "Location" },
-  { key: "donorName", label: "Donor Name" },
-  { key: "donationDate", label: "Donation Date" },
   { key: "description", label: "Description" },
 ];
 
@@ -48,7 +43,7 @@ export const sampleRows = [
     code: "PNWC-01002",
     category: "Hospital Bed",
     totalStock: 2,
-    availableStock: 1,
+    availableStock: 2,
     condition: "Excellent",
     status: "Available",
     description: "Manual adjustable bed",
